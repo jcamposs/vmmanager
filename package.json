@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "Virtual machine manager",
   "dependencies": {
-    "nlogger": "~0.4.0"
+    "nlogger": "~0.4.0",
+    "pkginfo": "~0.3.0"
   }
 }
 
