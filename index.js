@@ -63,10 +63,17 @@ nimble.series([
     }
 
     logger.info("Starting drivers drivers.");
+    var count = 0;
     for (var i = 0; i < drivers.length; i++)
-      drivers[i].start();
+      drivers[i].start(function(err) {
+        if (err)
+          logger.error(err);
+        else if (exiting)
+          drivers[i].stop();
 
-    callback();
+        if (++count == drivers.length)
+          callback();
+      });
   }
 ], function() {
   logger.info('Daemon ', module.exports.name, ' running.');
