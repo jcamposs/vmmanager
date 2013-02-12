@@ -8,6 +8,9 @@ var exiting = false;
 
 function shutdown() {
   exiting = true;
+  for (var i = 0; i < drivers.length; i++)
+    if (drivers[i].running)
+      drivers[i].stop();
 }
 
 logger.info('Daemon ', module.exports.name, ' version ',
