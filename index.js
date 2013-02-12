@@ -73,12 +73,22 @@ nimble.series([
             if (err)
               logger.error(err);
             else {
-              var info = JSON.parse(data);
-              var Driver = require(module_dir);
-              logger.debug("Found driver:\n", data);
-              drivers[info.name] = new Driver;
-              driverinfo[info.name] = data;
-              driver_count++;
+              try {
+                var info = JSON.parse(data);
+                var Driver = require(module_dir);
+
+                if (!info.name) {
+                  logger.warn("Missing name driver ", module_dir);
+                  return
+                }
+
+                logger.debug("Found driver:\n", data);
+                drivers[info.name] = new Driver;
+                driverinfo[info.name] = data;
+                driver_count++;
+              } catch (err) {
+                logger.error(err);
+              }
             }
 
             if (++count == files.length)
