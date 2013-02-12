@@ -4,10 +4,10 @@ var nimble = require('nimble');
 var fs = require('fs');
 
 var drivers = [];
-var exit = false;
+var exiting = false;
 
 function shutdown() {
-  exit = true;
+  exiting = true;
 }
 
 logger.info('Daemon ', module.exports.name, ' version ',
@@ -34,6 +34,11 @@ nimble.series([
     callback();
   },
   function(callback) {
+    if (exiting) {
+      logger.debug("Skipping drivers loading.");
+      callabck();
+    }
+
     logger.info("Loading drivers.");
     var path = "./lib/drivers";
 
@@ -52,9 +57,15 @@ nimble.series([
     });
   },
   function(callback) {
+    if (exiting) {
+      logger.debug("Skipping drivers initialization.");
+      callabck();
+    }
+
     logger.info("Starting drivers drivers.");
     for (var i = 0; i < drivers.length; i++)
       drivers[i].start();
+
     callback();
   }
 ], function() {
