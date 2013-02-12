@@ -16,10 +16,12 @@ function shutdown() {
 
   logger.info("Stop plugins.");
   for (var driver in drivers)
-    if (driver.running)
+    if (driver.running())
       driver.stop(function(err) {
-        if (err)
+        if (err) {
+          logger.debug("Unable to stop driver ", driver);
           logger.error(err);
+        }
 
         if (++count == driver_count)
           logger.info('All plugin have been stopped.');
@@ -108,17 +110,37 @@ nimble.series([
     var count = 0;
     for (var driver in drivers)
       drivers[driver].start(function(err) {
-        if (err)
+        if (err) {
+          logger.debug("Unable to start driver ", driver);
           logger.error(err);
-        else if (exiting)
+        } else if (exiting)
           drivers[driver].stop(function(err) {
-            if (err)
+            if (err) {
+              logger.debug("Unable to stop driver ", driver);
               logger.error(err);
+            }
           });
 
         if (++count == driver_count)
           callback();
       });
+  },
+  function(callback) {
+    if (exiting)
+      callabck();
+
+    var running = 0;
+    for (var driver in drivers)
+      if (drivers[driver].running())
+        running++;
+
+    if (running == 0) {
+      logger.warn("No drivers loaded. Unable to attend requests");
+      return;
+    }
+
+    logger.debug(running, " driver", (running > 1) ? "s " : " ", "started");
+    callback();
   }
 ], function() {
   logger.info('Daemon ', daemon_info.name, ' is now running.');
