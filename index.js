@@ -7,10 +7,23 @@ var drivers = [];
 var exiting = false;
 
 function shutdown() {
+  var count = 0;
   exiting = true;
+
+  logger.info("Stop plugins.");
   for (var i = 0; i < drivers.length; i++)
-    if (drivers[i].running)
-      drivers[i].stop();
+    if (!drivers[i].running) {
+      count++;
+      continue;
+    }
+
+    drivers[i].stop(function(err) {
+      if (err)
+        logger.error(err);
+
+      if (++count == drivers.length)
+        logger.info('All plugin have been stopped.');
+    });
 }
 
 logger.info('Daemon ', module.exports.name, ' version ',
@@ -18,7 +31,7 @@ logger.info('Daemon ', module.exports.name, ' version ',
 
 nimble.series([
   function(callback) {
-    logger.info("Installing signal handlers");
+    logger.info("Install signal handlers.");
 
     process.on('SIGINT', function() {
       logger.debug('Got a SIGINT');
@@ -42,7 +55,7 @@ nimble.series([
       callabck();
     }
 
-    logger.info("Loading drivers.");
+    logger.info("Load drivers.");
     var path = "./lib/drivers";
 
     fs.readdir(path, function(err, files) {
@@ -65,19 +78,22 @@ nimble.series([
       callabck();
     }
 
-    logger.info("Starting drivers drivers.");
+    logger.info("Start drivers.");
     var count = 0;
     for (var i = 0; i < drivers.length; i++)
       drivers[i].start(function(err) {
         if (err)
           logger.error(err);
         else if (exiting)
-          drivers[i].stop();
+          drivers[i].stop(function(err) {
+            if (err)
+              logger.error(err);
+          });
 
         if (++count == drivers.length)
           callback();
       });
   }
 ], function() {
-  logger.info('Daemon ', module.exports.name, ' running.');
+  logger.info('Daemon ', module.exports.name, ' is now running.');
 });
