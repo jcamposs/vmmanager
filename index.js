@@ -4,22 +4,35 @@ var nimble = require('nimble');
 var fs = require('fs');
 
 var drivers = [];
+var exit = false;
+
+function shutdown() {
+  exit = true;
+}
 
 logger.info('Daemon ', module.exports.name, ' version ',
   module.exports.version, ' starting.');
 
-logger.debug("Installing signal handlers");
-process.on('SIGINT', function() {
-  logger.debug('Got a SIGINT');
-  process.exit(1);
-});
-
-process.on('SIGHUP', function() {
-  logger.debug('Got a SIGHUP');
-  logger.debug('TODO:');
-});
-
 nimble.series([
+  function(callback) {
+    logger.info("Installing signal handlers");
+
+    process.on('SIGINT', function() {
+      logger.debug('Got a SIGINT');
+      shutdown();
+    });
+
+    process.on('SIGHUP', function() {
+      logger.debug('Got a SIGHUP');
+      shutdown();
+    });
+
+    process.on('exit', function () {
+      logger.info('Daemon ', module.exports.name, ' exit.');
+    });
+
+    callback();
+  },
   function(callback) {
     logger.info("Loading drivers.");
     var path = "./lib/drivers";
