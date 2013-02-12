@@ -4,7 +4,6 @@
   "description": "Virtual machine manager",
   "dependencies": {
     "nlogger": "~0.4.0",
-    "pkginfo": "~0.3.0",
     "nimble": "~0.0.2"
   }
 }

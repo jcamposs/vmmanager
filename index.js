@@ -1,8 +1,9 @@
 var logger = require('nlogger').logger(module);
-var pkginfo = require('pkginfo')(module);
 var nimble = require('nimble');
 var path = require('path');
 var fs = require('fs');
+
+var daemon_info = JSON.parse(fs.readFileSync('package.json', 'utf8'))
 
 var drivers = {};
 var driverinfo = {};
@@ -27,8 +28,8 @@ function shutdown() {
       logger.info('All plugin have been stopped.');
 }
 
-logger.info('Daemon ', module.exports.name, ' version ',
-  module.exports.version, ' starting.');
+logger.info('Daemon ', daemon_info.name, ' version ',
+  daemon_info.version, ' starting.');
 
 nimble.series([
   function(callback) {
@@ -45,7 +46,7 @@ nimble.series([
     });
 
     process.on('exit', function () {
-      logger.info('Daemon ', module.exports.name, ' exit.');
+      logger.info('Daemon ', daemon_info.name, ' exit.');
     });
 
     callback();
@@ -120,5 +121,5 @@ nimble.series([
       });
   }
 ], function() {
-  logger.info('Daemon ', module.exports.name, ' is now running.');
+  logger.info('Daemon ', daemon_info.name, ' is now running.');
 });
