@@ -1,29 +1,30 @@
 var logger = require('nlogger').logger(module);
 var pkginfo = require('pkginfo')(module);
 var nimble = require('nimble');
+var path = require('path');
 var fs = require('fs');
 
-var drivers = [];
+var drivers = {};
+var driverinfo = {};
 var exiting = false;
+var driver_count = 0;
 
 function shutdown() {
   var count = 0;
   exiting = true;
 
   logger.info("Stop plugins.");
-  for (var i = 0; i < drivers.length; i++)
-    if (!drivers[i].running) {
-      count++;
-      continue;
-    }
+  for (var driver in drivers)
+    if (driver.running)
+      driver.stop(function(err) {
+        if (err)
+          logger.error(err);
 
-    drivers[i].stop(function(err) {
-      if (err)
-        logger.error(err);
-
-      if (++count == drivers.length)
-        logger.info('All plugin have been stopped.');
-    });
+        if (++count == driver_count)
+          logger.info('All plugin have been stopped.');
+      });
+    else if (++count == driver_count)
+      logger.info('All plugin have been stopped.');
 }
 
 logger.info('Daemon ', module.exports.name, ' version ',
@@ -56,20 +57,34 @@ nimble.series([
     }
 
     logger.info("Load drivers.");
-    var path = "./lib/drivers";
+    var driver_dir = path.join(__dirname, "lib", "drivers");
 
-    fs.readdir(path, function(err, files) {
+    fs.readdir(driver_dir, function(err, files) {
       if (err) {
         logger.error(err);
         throw err;
       }
 
+      var count = 0;
       for (var i = 0; i < files.length; i++) {
-        var Driver = require(path + '/' + files[i]);
-        drivers.push(new Driver);
-      }
+        var module_dir = path.join(driver_dir, files[i]);
+        fs.readFile(path.join(module_dir, 'package.json'), 'utf8',
+          function(err, data) {
+            if (err)
+              logger.error(err);
+            else {
+              var info = JSON.parse(data);
+              var Driver = require(module_dir);
+              logger.debug("Found driver:\n", data);
+              drivers[info.name] = new Driver;
+              driverinfo[info.name] = data;
+              driver_count++;
+            }
 
-      callback();
+            if (++count == files.length)
+              callback();
+        });
+      }
     });
   },
   function(callback) {
@@ -80,17 +95,17 @@ nimble.series([
 
     logger.info("Start drivers.");
     var count = 0;
-    for (var i = 0; i < drivers.length; i++)
-      drivers[i].start(function(err) {
+    for (var driver in drivers)
+      drivers[driver].start(function(err) {
         if (err)
           logger.error(err);
         else if (exiting)
-          drivers[i].stop(function(err) {
+          drivers[driver].stop(function(err) {
             if (err)
               logger.error(err);
           });
 
-        if (++count == drivers.length)
+        if (++count == driver_count)
           callback();
       });
   }
