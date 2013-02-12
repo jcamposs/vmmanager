@@ -141,6 +141,15 @@ nimble.series([
 
     logger.debug(running, " driver", (running > 1) ? "s " : " ", "started");
     callback();
+  },
+  function(callback) {
+    if (exiting) {
+      logger.debug("Skipping AMQP initialization.");
+      callback();
+    }
+
+    logger.debug("TODO: AMQP initialization");
+    callback();
   }
 ], function() {
   logger.info('Daemon ', daemon_info.name, ' is now running.');
