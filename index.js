@@ -167,12 +167,16 @@ nimble.series([
   function(callback) {
     if (exiting) {
       logger.debug("Skipping AMQP initialization.");
-      callback();
+      return;
     }
 
     logger.info("Start AMQP stuff.");
-    controller.start();
-    callback();
+    controller.start(function(err) {
+      if (err)
+        logger.error(err);
+      else
+        callback();
+    });
   }
 ], function() {
   logger.info('Daemon ', daemon_info.name, ' is now running.');
