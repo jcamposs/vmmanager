@@ -16,18 +16,22 @@ function shutdown() {
 
   logger.info("Stop plugins.");
   for (var driver in drivers)
-    if (driver.running())
-      driver.stop(function(err) {
+    if (drivers[driver].running())
+      drivers[driver].stop(function(err) {
         if (err) {
           logger.debug("Unable to stop driver ", driver);
           logger.error(err);
         }
 
-        if (++count == driver_count)
-          logger.info('All plugin have been stopped.');
+        if (++count == driver_count) {
+          logger.info("Stop AMQP stuff.");
+          controller.stop();
+        }
       });
-    else if (++count == driver_count)
-      logger.info('All plugin have been stopped.');
+    else if (++count == driver_count) {
+      logger.info("Stop AMQP stuff.");
+      controller.stop();
+    }
 }
 
 logger.info('Daemon ', daemon_info.name, ' version ',
