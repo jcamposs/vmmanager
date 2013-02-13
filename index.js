@@ -62,6 +62,7 @@ nimble.series([
     if (exiting) {
       logger.debug("Skipping drivers loading.");
       callback();
+      return;
     }
 
     logger.info("Load drivers.");
@@ -122,6 +123,7 @@ nimble.series([
     if (exiting) {
       logger.debug("Skipping drivers initialization.");
       callback();
+      return;
     }
 
     logger.info("Start drivers.");
@@ -144,8 +146,10 @@ nimble.series([
       });
   },
   function(callback) {
-    if (exiting)
+    if (exiting) {
       callback();
+      return;
+    }
 
     var running = 0;
     for (var driver in drivers)
