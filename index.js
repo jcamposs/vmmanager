@@ -86,9 +86,22 @@ nimble.series([
                 }
 
                 logger.debug("Found driver:\n", data);
-                drivers[info.name] = new Driver;
-                driverinfo[info.name] = data;
-                driver_count++;
+                if (driverinfo[info.name]) {
+                  if (info.version > driverinfo[info.name].version) {
+                    logger.warn("Replacing driver ", info.name, " v.",
+                                                driverinfo[info.name].version);
+                    logger.warn("Using driver ", info.name, " v.", info.version);
+                    drivers[info.name] = new Driver;
+                    driverinfo[info.name] = info;
+                  } else
+                    logger.debug("Ignored driver ", info.name,
+                                              " v.", info.version, ". Using v.",
+                                                driverinfo[info.name].version);
+                } else {
+                  drivers[info.name] = new Driver;
+                  driverinfo[info.name] = info;
+                  driver_count++;
+                }
               } catch (err) {
                 logger.error(err);
               }
