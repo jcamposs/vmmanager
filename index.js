@@ -56,6 +56,12 @@ nimble.series([
       logger.info('Daemon ', daemon_info.name, ' exit.');
     });
 
+    process.on('uncaughtException', function(err) {
+      logger.error('Critical error: ', err);
+      shutdown();
+      process.exit(1);
+    });
+
     callback();
   },
   function(callback) {
