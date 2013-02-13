@@ -4,7 +4,8 @@
   "description": "Virtual machine manager",
   "dependencies": {
     "nlogger": "~0.4.0",
-    "nimble": "~0.0.2"
+    "nimble": "~0.0.2",
+    "amqp": "~0.1.4"
   }
 }
 

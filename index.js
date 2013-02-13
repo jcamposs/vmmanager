@@ -1,4 +1,5 @@
 var logger = require('nlogger').logger(module);
+var controller = require('./lib/controller');
 var nimble = require('nimble');
 var path = require('path');
 var fs = require('fs');
@@ -165,7 +166,8 @@ nimble.series([
       callback();
     }
 
-    logger.debug("TODO: AMQP initialization");
+    logger.info("Start AMQP stuff.");
+    controller.start();
     callback();
   }
 ], function() {
