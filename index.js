@@ -43,12 +43,12 @@ nimble.series([
     logger.info("Install signal handlers.");
 
     process.on('SIGINT', function() {
-      logger.debug('Got a SIGINT');
+      logger.warn('SIGINT signal received.');
       shutdown();
     });
 
     process.on('SIGHUP', function() {
-      logger.debug('Got a SIGHUP');
+      logger.warn('SIGHUP signal received');
       shutdown();
     });
 
