@@ -26,12 +26,12 @@ function shutdown() {
 
         if (++count == driver_count) {
           logger.info("Stop AMQP stuff.");
-          controller.stop();
+          controller.stop(function(){logger.debug("AMQP shutdown");});
         }
       });
     else if (++count == driver_count) {
       logger.info("Stop AMQP stuff.");
-      controller.stop();
+      controller.stop(function(){logger.debug("AMQP shutdown");});
     }
 }
 
