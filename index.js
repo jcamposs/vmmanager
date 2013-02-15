@@ -11,30 +11,6 @@ var driverinfo = {};
 var exiting = false;
 var driver_count = 0;
 
-function shutdown() {
-  var count = 0;
-  exiting = true;
-
-  logger.info("Stop plugins.");
-  for (var driver in drivers)
-    if (drivers[driver].running())
-      drivers[driver].stop(function(err) {
-        if (err) {
-          logger.debug("Unable to stop driver ", driver);
-          logger.error(err);
-        }
-
-        if (++count == driver_count) {
-          logger.info("Stop AMQP stuff.");
-          controller.stop(function(){logger.debug("AMQP shutdown");});
-        }
-      });
-    else if (++count == driver_count) {
-      logger.info("Stop AMQP stuff.");
-      controller.stop(function(){logger.debug("AMQP shutdown");});
-    }
-}
-
 logger.info('Daemon ', daemon_info.name, ' version ',
   daemon_info.version, ' starting.');
 
@@ -187,3 +163,35 @@ nimble.series([
 ], function() {
   logger.info('Daemon ', daemon_info.name, ' is now running.');
 });
+
+function shutdown() {
+  var count = 0;
+  exiting = true;
+
+  nimble.series([
+    function(callback) {
+      logger.info("Stop plugins.");
+      for (var driver in drivers)
+        if (drivers[driver].running())
+          drivers[driver].stop(function(err) {
+            if (err) {
+              logger.debug("Unable to stop driver ", driver);
+              logger.error(err);
+            }
+
+            if (++count == driver_count)
+              callback();
+          });
+        else if (++count == driver_count)
+          callback();
+    },
+    function(callback) {
+      logger.info("Stop AMQP stuff.");
+      controller.stop(function() {
+        callback();
+      });
+    }
+  ], function() {
+    logger.info('Daemon ', daemon_info.name, ' shut down.');
+  });
+}
