@@ -7,7 +7,8 @@ if (Object.config) {
   process.exit(1);
 } else {
   Object.config = {
-    environment: "development"
+    environment: "development",
+    path: "/tmp/workspaces"
   }
 }
 
