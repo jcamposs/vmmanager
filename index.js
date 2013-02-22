@@ -63,6 +63,7 @@ function parse_opts() {
     } else if (process.argv[i].indexOf("--environment=") == 0) {
       set_environment(process.argv[i].substring("--environment=".length,
                                                      process.argv[i].length));
+      i++;
     } else if (process.argv[i] == "-p") {
       if (process.argv.length < i + 2)
         print_usage();
