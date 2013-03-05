@@ -5,7 +5,8 @@
   "dependencies": {
     "nlogger": "~0.4.0",
     "nimble": "~0.0.2",
-    "amqp": "~0.1.4"
+    "amqp": "~0.1.4",
+    "ejs": "~0.8.3"
   }
 }
 
