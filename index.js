@@ -8,6 +8,7 @@ if (Object.config) {
   process.exit(1);
 } else {
   Object.config = {
+    confdir: path.join(__dirname, "config"),
     environment: "development",
     path: "/tmp/workspaces"
   }
