@@ -1,7 +1,4 @@
-var daemon = require('./lib/daemon')
 var path = require('path');
-
-var environment = "development";
 
 if (Object.config) {
   console.error("Cant store daemon configuration.");
@@ -13,6 +10,11 @@ if (Object.config) {
     path: "/tmp/workspaces"
   }
 }
+
+var daemon = require('./lib/daemon')
+
+
+var environment = "development";
 
 parse_opts();
 daemon.start()
