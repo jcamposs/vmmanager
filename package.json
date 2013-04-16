@@ -3,10 +3,11 @@
   "version": "0.0.1",
   "description": "Virtual machine manager",
   "dependencies": {
-    "nlogger": "~0.4.0",
-    "nimble": "~0.0.2",
     "amqp": "~0.1.4",
-    "ejs": "~0.8.3"
+    "ejs": "~0.8.3",
+    "konphyg": "~1.2.0",
+    "nimble": "~0.0.2",
+    "nlogger": "~0.4.0"
   }
 }
 
