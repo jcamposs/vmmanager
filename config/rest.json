@@ -1,6 +1,7 @@
 {
   "hostname": "localhost",
   "port": 3000,
-  "path": "/home/user",
-  "method": "GET"
+  "path": "/workspaces/:wid/conf",
+  "method": "GET",
+  "download":"/tmp"
 }
