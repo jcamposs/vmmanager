@@ -3,5 +3,11 @@
   "port": 3000,
   "path": "/workspaces/:wid/conf",
   "method": "GET",
-  "download":"/tmp"
+  "download":"/tmp",
+  "authenticate" : {
+    "url": "/admins/sign_in",
+    "email": "netlab@libresoft.es",
+    "passwd": "n3tl4b",
+    "cookie": "/tmp/netlab.cookie"
+  }
 }
